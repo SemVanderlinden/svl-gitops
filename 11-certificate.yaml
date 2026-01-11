@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: svl-cert
+  namespace: svl
+spec:
+  secretName: svl-tls
+  dnsNames:
+    - localhost
+  issuerRef:
+    name: svl-selfsigned
+    kind: Issuer
