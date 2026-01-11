@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svl-api
+  namespace: svl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: svl-api
+  template:
+    metadata:
+      labels:
+        app: svl-api
+    spec:
+      containers:
+        - name: api
+          image: svl-api:1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              value: svl-db
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: svl-db-secret
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: svl-db-secret
+                  key: POSTGRES_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: svl-db-secret
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svl-api
+  namespace: svl
+spec:
+  selector:
+    app: svl-api
+  ports:
+    - port: 8000
+      targetPort: 8000
