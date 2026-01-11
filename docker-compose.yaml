@@ -1,0 +1,42 @@
+services:
+  svl-db:
+    image: postgres:16
+    container_name: svl-db
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+    ports:
+      - "5432:5432"
+    volumes:
+      - svl_db_data:/var/lib/postgresql/data
+
+  svl-api:
+    build: ./api
+    container_name: svl-api
+    environment:
+      DB_HOST: svl-db
+      DB_NAME: appdb
+      DB_USER: appuser
+      DB_PASS: apppass
+    ports:
+      - "8000:8000"
+    depends_on:
+      - svl-db
+
+  svl-frontend:
+    build: ./frontend
+    container_name: svl-frontend
+    ports:
+      - "8080:80"
+    # LET OP: jouw HTML gebruikt /api/user (relatief).
+    # In pure compose is er geen ingress die /api naar de api routeert.
+    # Voor compose-test kan je óf:
+    # 1) tijdelijk fetch naar http://localhost:8000/user zetten
+    # OF
+    # 2) een kleine reverse-proxy toevoegen (nginx) zodat /api werkt.
+    #
+    # Ik geef hieronder meteen de k8s-setup waar /api perfect werkt.
+
+volumes:
+  svl_db_data:

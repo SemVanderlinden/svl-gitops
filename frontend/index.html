@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Milestone 2</title>
+  </head>
+  <body>
+    <h1>
+      <span id="user">Loading...</span> has reached milestone 2!
+    </h1>
+
+    <p>
+      Container ID: <span id="cid">Loading...</span>
+    </p>
+
+    <script>
+      // fetch user from API
+      fetch("/api/user")
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("user").innerText = data.name;
+        });
+
+      // fetch container id from API
+      fetch("/api/id")
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("cid").innerText = data.container_id;
+        });
+    </script>
+  </body>
+</html>
